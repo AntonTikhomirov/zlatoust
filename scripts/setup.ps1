@@ -25,6 +25,7 @@ $lnk.TargetPath = "$root\.venv\Scripts\pythonw.exe"
 $lnk.Arguments = "-m zlatoust"
 $lnk.WorkingDirectory = $root
 $lnk.Description = "Тренажёр публичных выступлений"
+$lnk.IconLocation = "$root\assets\icon.ico,0"
 $lnk.Save()
 
 Write-Host "Готово. Запускайте ярлык «Златоуст» на рабочем столе." -ForegroundColor Green

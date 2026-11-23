@@ -48,9 +48,9 @@
     "semantic_hash": "4b1c0630cfef27cc59cc93d671c2beea"
   },
   "backend/zlatoust/app.py": {
-    "mtime": 1795441028.9030027,
-    "seen": 1795441057.1863768,
-    "ast_hash": "a6c4161ddfdd49239897a2c19421dbf0",
+    "mtime": 1795441344.393836,
+    "seen": 1795441357.6459343,
+    "ast_hash": "a2dd5f0a8d42e6d560c0d191cf56695b",
     "semantic_hash": ""
   },
   "backend/zlatoust/db.py": {
@@ -204,15 +204,15 @@
     "semantic_hash": "503c4b31fa74a94628207fbafafa025b"
   },
   "pyproject.toml": {
-    "mtime": 1795438998.9811702,
-    "seen": 1795439123.1381142,
-    "ast_hash": "74a3376c267630426d9481f170d19493",
-    "semantic_hash": "74a3376c267630426d9481f170d19493"
+    "mtime": 1795441311.370883,
+    "seen": 1795441357.6459725,
+    "ast_hash": "beb32de1d1ab1787b6cf9fcb10baa6ce",
+    "semantic_hash": ""
   },
   "scripts/setup.ps1": {
-    "mtime": 1795440029.307692,
-    "seen": 1795441057.1864192,
-    "ast_hash": "f579b6d2c028c976a5a5bfc85f2e48da",
+    "mtime": 1795441356.8740094,
+    "seen": 1795441357.6459737,
+    "ast_hash": "94a96ec0062622366779dfb922e47d12",
     "semantic_hash": ""
   },
   "scripts/update.ps1": {
@@ -234,16 +234,16 @@
     "semantic_hash": "94749563fd554ed5d1d89b3ddbaba9b5"
   },
   "README.md": {
-    "mtime": 1795439133.3160543,
-    "seen": 1795439143.3078873,
-    "ast_hash": "09ab187af8b85430a4d88f7309517ca8",
+    "mtime": 1795441356.890024,
+    "seen": 1795441357.6459832,
+    "ast_hash": "b0cd3a83313afb838ab738fdeda7ad0a",
     "semantic_hash": ""
   },
   "docs/architecture.md": {
-    "mtime": 1795439051.0185559,
-    "seen": 1795439123.138125,
-    "ast_hash": "ee7c31931866cd219f20218b33e998dc",
-    "semantic_hash": "ee7c31931866cd219f20218b33e998dc"
+    "mtime": 1795441356.8816476,
+    "seen": 1795441357.6459844,
+    "ast_hash": "477eda603dcef1926c0143eb6e5bd6e6",
+    "semantic_hash": ""
   },
   "frontend/index.html": {
     "mtime": 1795438620.3091443,
@@ -255,6 +255,18 @@
     "mtime": 1795440035.0823135,
     "seen": 1795441057.1864247,
     "ast_hash": "dd2edd4541cb19d91487cb0f7c0a9651",
+    "semantic_hash": ""
+  },
+  "backend/zlatoust/desktop.py": {
+    "mtime": 1795441331.10063,
+    "seen": 1795441357.6459389,
+    "ast_hash": "b6aeea95cf757f6e92c56f64bb6dfb92",
+    "semantic_hash": ""
+  },
+  "assets/icon.png": {
+    "mtime": 1795441311.0006287,
+    "seen": 1795441357.6459873,
+    "ast_hash": "10333d4732bc14953bba369b1770915d",
     "semantic_hash": ""
   },
   "frontend/package-lock.json": {

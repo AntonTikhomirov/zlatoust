@@ -3,8 +3,6 @@ from __future__ import annotations
 
 import logging
 import os
-import shutil
-import subprocess
 import sys
 import threading
 import time
@@ -188,30 +186,6 @@ def _server_running() -> bool:
         return False
 
 
-def _find_edge() -> str | None:
-    cands = [
-        os.path.expandvars(r"%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe"),
-        os.path.expandvars(r"%ProgramFiles%\Microsoft\Edge\Application\msedge.exe"),
-        shutil.which("msedge") or "",
-        shutil.which("chromium") or "",
-        shutil.which("google-chrome") or "",
-    ]
-    return next((c for c in cands if c and Path(c).exists()), None)
-
-
-def _open_window(url: str) -> subprocess.Popen | None:
-    """Отдельное окно без адресной строки, со своим профилем (разрешение на камеру запоминается)."""
-    exe = _find_edge()
-    if not exe:
-        webbrowser.open(url)
-        return None
-    profile = data_dir() / "window-profile"
-    return subprocess.Popen([
-        exe, f"--app={url}", f"--user-data-dir={profile}", "--no-first-run", "--no-default-browser-check",
-        "--window-size=1280,860", "--disable-features=Translate",
-    ])
-
-
 def _show_startup_error() -> None:
     """Вместо пустого окна с ERR_CONNECTION_REFUSED показываем понятную страницу с концом журнала."""
     import html
@@ -242,16 +216,13 @@ def main() -> None:
         _show_startup_error()
 
 
-def _main() -> None:
-    url = f"http://{HOST}:{PORT}/"
-    if "--server" not in sys.argv and _server_running():
-        _open_window(url)  # приложение уже запущено — просто ещё одно окно
-        return
-
+def _start_server():
+    """Запускает ядро в фоновом потоке. Возвращает (ok, сообщение, server, app, поток)."""
     import uvicorn
 
     app = create_app()
     server = uvicorn.Server(uvicorn.Config(app, host=HOST, port=PORT, log_level="warning", log_config=None))
+
     def run() -> None:
         try:
             server.run()
@@ -266,23 +237,57 @@ def _main() -> None:
         time.sleep(0.2)
     if not server.started:
         log.error("Ядро не запустилось (поток жив: %s)", t.is_alive())
-        _show_startup_error()
-        return
-    log.info("Златоуст запущен: %s, данные в %s", url, data_dir())
+        return False, "Ядро не запустилось: возможно, порт 8765 занят другой программой.", server, app, t
+    log.info("Златоуст запущен: http://%s:%s/, данные в %s", HOST, PORT, data_dir())
+    return True, "", server, app, t
 
+
+def _drain(app) -> None:
+    """Дать закончиться начатому анализу, чтобы запись не осталась без отчёта."""
+    while not app.state.worker.q.empty() or any(s["status"] == "processing" for s in db.list_all(5)):
+        time.sleep(2)
+
+
+def _main() -> None:
+    url = f"http://{HOST}:{PORT}/"
     if "--server" in sys.argv:
+        ok, msg, _server, _app, t = _start_server()
+        if not ok:
+            raise SystemExit(msg)
         t.join()
         return
-    proc = _open_window(url)
-    if proc is not None:
-        proc.wait()
-        # Закрыли окно — закрываемся. Если идёт анализ, даём ему закончиться.
-        while not app.state.worker.q.empty() or any(s["status"] == "processing" for s in db.list_all(5)):
-            time.sleep(2)
-    else:
-        # Открыто в обычном браузере: живём, пока вкладка присылает пинги.
-        while time.monotonic() - _last_ping < 120:
-            time.sleep(5)
+
+    try:
+        from . import desktop
+        import webview  # noqa: F401
+    except ImportError:
+        desktop = None
+
+    already = _server_running()
+    if desktop is not None:
+        holder: dict = {}
+
+        def start():
+            ok, msg, server, app, t = _start_server()
+            holder.update(server=server, app=app, t=t)
+            return ok, msg, (lambda: _drain(app))
+
+        desktop.run(start, url, already_running=already)
+        if "server" in holder:
+            holder["server"].should_exit = True
+            holder["t"].join(timeout=5)
+        return
+
+    # Запасной путь для разработки (Linux/macOS): обычный браузер, живём, пока вкладка присылает пинги.
+    if already:
+        webbrowser.open(url)
+        return
+    ok, msg, server, _app, t = _start_server()
+    if not ok:
+        raise SystemExit(msg)
+    webbrowser.open(url)
+    while time.monotonic() - _last_ping < 120:
+        time.sleep(5)
     server.should_exit = True
     t.join(timeout=5)
 
