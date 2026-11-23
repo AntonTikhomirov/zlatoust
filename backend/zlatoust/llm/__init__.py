@@ -115,7 +115,7 @@ def rules_feedback(scored: dict, exercise_id: str | None) -> Feedback:
         if o["skill"] in seen:
             continue
         seen.add(o["skill"])
-        imps.append(Improvement(skill=o["skill"], problem=o["text"], how_to_fix=tips.get(o["skill"], ""), t=o.get("t")))
+        imps.append(Improvement(skill=o["skill"], problem=o["text"], how_to_fix=o.get("fix") or tips.get(o["skill"], ""), t=o.get("t")))
         if len(imps) == 4:
             break
     ov = scored.get("overall")
@@ -124,7 +124,7 @@ def rules_feedback(scored: dict, exercise_id: str | None) -> Feedback:
     else:
         head = "Сильная запись." if ov >= 85 else "Хорошая основа." if ov >= 70 else "Есть над чем поработать."
         focus = SKILL_TITLES.get(weakest[0], "")
-        summary = f"{head} Общая оценка — {ov} из 100. Главный фокус на следующую тренировку — {focus.lower()}."
+        summary = f"{head} Главный фокус на следующую тренировку — {focus.lower()}."
     return Feedback(summary=summary, strengths=good, improvements=imps, next_exercise_id=nxt["id"],
                     next_exercise_why=f"Тренирует навык «{SKILL_TITLES.get(nxt['skill'], '')}», который сейчас слабее остальных.")
 

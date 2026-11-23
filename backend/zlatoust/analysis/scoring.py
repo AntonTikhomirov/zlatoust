@@ -20,8 +20,13 @@ def band(v: float, good_lo: float, good_hi: float, bad_lo: float, bad_hi: float)
     return int(max(10, round(100 - 60 * k if k <= 1 else 40 - 30 * min(1, (k - 1)))))
 
 
-def _obs(skill: str, level: str, text: str, t: float | None = None) -> dict:
-    return {"skill": skill, "level": level, "text": text, "t": t}
+def _obs(skill: str, level: str, text: str, t: float | None = None, fix: str | None = None) -> dict:
+    return {"skill": skill, "level": level, "text": text, "t": t, "fix": fix}
+
+
+def n(x: float, digits: int = 1) -> str:
+    """Число по-русски: десятичная запятая."""
+    return f"{x:.{digits}f}".replace(".", ",")
 
 
 def fmt_t(t: float) -> str:
@@ -39,11 +44,11 @@ def score(speech: dict, prosody: dict, video: dict, diction: dict | None, mode: 
         sps = speech["syllables_per_sec"]
         scores["tempo"] = band(sps, 3.4, 5.2, 2.4, 6.5)
         if sps > 5.2:
-            obs.append(_obs("tempo", "warn", f"Темп высокий: {sps} слога в секунду. Слушателю комфортно до 5. Замедлитесь и добавьте паузы."))
+            obs.append(_obs("tempo", "warn", f"Темп высокий: {n(sps)} слога в секунду. Слушателю комфортно до 5. Замедлитесь и добавьте паузы."))
         elif sps < 3.4:
-            obs.append(_obs("tempo", "warn", f"Темп медленный: {sps} слога в секунду. Речь может звучать неуверенно."))
+            obs.append(_obs("tempo", "warn", f"Темп медленный: {n(sps)} слога в секунду. Речь может звучать неуверенно."))
         else:
-            obs.append(_obs("tempo", "good", f"Темп комфортный: {sps} слога в секунду."))
+            obs.append(_obs("tempo", "good", f"Темп комфортный: {n(sps)} слога в секунду."))
         w = speech.get("tempo_windows", [])
         if len(w) >= 4:
             first = sum(x["syl_per_sec"] for x in w[: len(w) // 2]) / (len(w) // 2)
@@ -57,7 +62,7 @@ def score(speech: dict, prosody: dict, video: dict, diction: dict | None, mode: 
         if pr < 0.10:
             obs.append(_obs("pauses", "warn", "Почти нет пауз. Пауза после важной мысли даёт слушателю её усвоить."))
         for p in speech.get("long_pauses", [])[:3]:
-            obs.append(_obs("pauses", "warn", f"Долгая пауза {p['dur']:.1f} с на {fmt_t(p['t'])}: похоже на потерю мысли.", p["t"]))
+            obs.append(_obs("pauses", "warn", f"Долгая пауза {n(p['dur'])} с на {fmt_t(p['t'])}: похоже на потерю мысли.", p["t"]))
         if speech.get("start_delay", 0) > 2.5:
             obs.append(_obs("pauses", "warn", f"Начали говорить только через {speech['start_delay']:.0f} с после старта.", 0))
 
@@ -71,7 +76,7 @@ def score(speech: dict, prosody: dict, video: dict, diction: dict | None, mode: 
                 top[f["text"]] = top.get(f["text"], 0) + 1
             worst = ", ".join(f"«{k}» ×{v}" for k, v in sorted(top.items(), key=lambda kv: -kv[1])[:3])
             level = "bad" if fpm > 5 else "warn" if fpm > 1.5 else "good"
-            obs.append(_obs("fluency", level, f"Слова-паразиты: {fpm:.1f} в минуту. Чаще всего {worst}.", speech["fillers"][0]["t"]))
+            obs.append(_obs("fluency", level, f"Слова-паразиты: {n(fpm)} в минуту. Чаще всего {worst}.", speech["fillers"][0]["t"]))
         else:
             obs.append(_obs("fluency", "good", "Слов-паразитов не слышно."))
         if reps >= 2:
@@ -81,9 +86,9 @@ def score(speech: dict, prosody: dict, video: dict, diction: dict | None, mode: 
         st = prosody["pitch_std_st"]
         scores["intonation"] = band(st, 2.5, 6.0, 1.0, 9.0)
         if st < 2.5:
-            obs.append(_obs("intonation", "warn", f"Голос звучит монотонно: разброс высоты {st} полутона. Живая речь — от 2,5 и выше."))
+            obs.append(_obs("intonation", "warn", f"Голос звучит монотонно: разброс высоты {n(st)} полутона. Живая речь — от 2,5 и выше."))
         else:
-            obs.append(_obs("intonation", "good", f"Интонация живая: разброс высоты {st} полутона."))
+            obs.append(_obs("intonation", "good", f"Интонация живая: разброс высоты {n(st)} полутона."))
 
     if prosody:
         lvl = prosody.get("level_dbfs", -30)
@@ -112,7 +117,8 @@ def score(speech: dict, prosody: dict, video: dict, diction: dict | None, mode: 
     if video.get("video"):
         fv = video.get("face_visible_ratio", 0)
         if fv < 0.7:
-            obs.append(_obs("eye_contact", "warn", f"Лицо было в кадре только {fv * 100:.0f}% времени."))
+            obs.append(_obs("eye_contact", "warn", f"Лицо было в кадре только {fv * 100:.0f}% времени.",
+                            fix="Поставьте камеру на уровень глаз и сядьте так, чтобы лицо было в центре кадра."))
         if "eye_contact_ratio" in video:
             ec = video["eye_contact_ratio"]
             scores["eye_contact"] = band(ec, 0.7, 1.0, 0.3, 1.0)
