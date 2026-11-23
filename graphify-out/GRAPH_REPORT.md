@@ -1,17 +1,17 @@
 # Graph Report - zlatoust  (2026-11-23)
 
 ## Corpus Check
-- 43 files · ~16,489 words
+- 43 files · ~16,581 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 7 file(s) not represented in the graph (top: (none) 4, .ico 1, .css 1)
 
 ## Summary
-- 399 nodes · 795 edges · 21 communities (11 shown, 10 thin omitted)
+- 399 nodes · 797 edges · 23 communities (12 shown, 11 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 32 edges (avg confidence: 0.89)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `cbe6e459`
+- Built from commit: `11b1ec58`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -31,6 +31,7 @@
 - Планы развития
 - Пакет zlatoust
 - pipeline.py
+- scoring.py
 
 ## God Nodes (most connected - your core abstractions)
 1. `create_app()` - 27 edges
@@ -63,7 +64,7 @@
 - **Варианты толкования** — readme_разбор_по_правилам, readme_ollama, readme_claude_api [EXTRACTED 1.00]
 - **Конвейер анализа записи** — docs_architecture_pyav, docs_architecture_faster_whisper, docs_architecture_метрики_речи, docs_architecture_parselmouth, docs_architecture_mediapipe, docs_architecture_оценки [EXTRACTED 1.00]
 
-## Communities (21 total, 10 thin omitted)
+## Communities (23 total, 11 thin omitted)
 
 ### Community 0 - "Клиент API интерфейса"
 Cohesion: 0.09
@@ -78,24 +79,24 @@ Cohesion: 0.07
 Nodes (36): dependencies, react@^19.1.0, react-dom@^19.1.0, devDependencies, eslint@^9.25.0, @eslint/js@^9.25.0, eslint-plugin-react-hooks@^5.2.0, eslint-plugin-react-refresh@^0.4.19 (+28 more)
 
 ### Community 3 - "Распознавание речи Whisper"
-Cohesion: 0.12
-Nodes (14): _add_cuda_dll_dirs(), cuda_available(), get_transcriber(), Transcriber, Transcript, Word, ensure_models(), models_ready() (+6 more)
+Cohesion: 0.10
+Nodes (10): _add_cuda_dll_dirs(), cuda_available(), get_transcriber(), Transcriber, ensure_models(), _runs(), video_metrics(), models_dir() (+2 more)
 
 ### Community 4 - "Запуск окна и сервера"
-Cohesion: 0.07
-Nodes (19): _drain(), main(), _main(), start(), _server_running(), SettingsIn, _setup_logging(), _show_startup_error() (+11 more)
+Cohesion: 0.08
+Nodes (15): _drain(), main(), _main(), start(), _server_running(), SettingsIn, _setup_logging(), _show_startup_error() (+7 more)
 
 ### Community 5 - "HTTP API сессий"
-Cohesion: 0.11
-Nodes (20): create_app(), create_session(), delete(), get_session(), list_sessions(), retry(), video(), _connect() (+12 more)
+Cohesion: 0.09
+Nodes (30): models_ready(), create_app(), create_session(), delete(), get_session(), get_settings(), health(), list_sessions() (+22 more)
 
 ### Community 6 - "Архитектура и решения"
 Cohesion: 0.07
 Nodes (24): faster-whisper распознавание, MediaPipe Pose + Face, Praat/parselmouth (тон, громкость), PyAV (звук, кадры, ffmpeg внутри), React + TypeScript интерфейс (MediaRecorder webm), analysis/scoring.py пороги, SQLite + папка записей, Конвейер анализа (+16 more)
 
 ### Community 7 - "Упражнения и LLM-разбор"
-Cohesion: 0.14
-Nodes (16): get_settings(), put_settings(), test_llm(), pick_for_skill(), _call_anthropic(), _call_ollama(), Feedback, Improvement (+8 more)
+Cohesion: 0.16
+Nodes (12): put_settings(), pick_for_skill(), _call_anthropic(), _call_ollama(), Feedback, Improvement, interpret(), _payload() (+4 more)
 
 ### Community 8 - "Конфиг TS приложения"
 Cohesion: 0.10
@@ -106,13 +107,17 @@ Cohesion: 0.11
 Nodes (18): compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, lib, module, moduleDetection, moduleResolution, noEmit (+10 more)
 
 ### Community 18 - "pipeline.py"
-Cohesion: 0.10
-Nodes (15): band(), fmt_t(), n(), _obs(), score(), speech_metrics(), diction_compare(), edit_distance() (+7 more)
+Cohesion: 0.15
+Nodes (12): speech_metrics(), diction_compare(), edit_distance(), find_fillers(), levenshtein_ops(), norm_word(), syllables(), tokens() (+4 more)
+
+### Community 21 - "scoring.py"
+Cohesion: 0.33
+Nodes (5): band(), fmt_t(), n(), _obs(), score()
 
 ## Knowledge Gaps
 - **15 isolated node(s):** `zlatoust`, `Планы: установщик, диагностика, графики, Android`, `analysis/scoring.py пороги`, `index.html #root (точка входа /src/main.tsx)`, `scripts/start.bat` (+10 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 154 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **11 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -130,4 +135,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **Are the 2 inferred relationships involving `analyze()` (e.g. with `Transcriber` and `.transcribe()`) actually correct?**
   _`analyze()` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **Should `Анализ голоса (Praat)` be split into smaller, more focused modules?**
-  _Cohesion score 0.08571428571428572 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08912655971479501 - nodes in this community are weakly interconnected._

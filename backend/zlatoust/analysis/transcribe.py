@@ -125,6 +125,16 @@ class Transcriber:
                     t = w.word.strip()
                     if t:
                         words.append(Word(t, float(w.start), float(w.end), float(w.probability)))
+        # Подсказка с «ну, э-э» помогает Whisper не вычищать паразиты, но иногда он «слышит»
+        # их сам из подсказки — обычно «ну» в начале. Такие слова он отмечает неуверенными:
+        # паразит с вероятностью ниже 0,5 выбрасываем, чтобы не приписывать человеку то, чего не было.
+        from .text import FILLER_SOUNDS, FILLER_WORDS, norm_word
+
+        kept = [w for w in words if not (w.prob < 0.5 and norm_word(w.text) in FILLER_WORDS | FILLER_SOUNDS)]
+        if len(kept) != len(words):
+            log.info("Убрано сомнительных паразитов из подсказки: %d", len(words) - len(kept))
+            words = kept
+            texts = [" ".join(w.text for w in words)]
         return Transcript(text=" ".join(texts).strip(), words=words, device=self._device, model=self._name)
 
 

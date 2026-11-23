@@ -36,10 +36,10 @@
     "semantic_hash": "40f07734f1f4b01772caccebd8445510"
   },
   "backend/zlatoust/analysis/transcribe.py": {
-    "mtime": 1795438234.0265074,
-    "seen": 1795439123.1380546,
-    "ast_hash": "26d8cc92cecf77b044ab51bc53c06e0d",
-    "semantic_hash": "26d8cc92cecf77b044ab51bc53c06e0d"
+    "mtime": 1795443523.4401739,
+    "seen": 1795443529.6841257,
+    "ast_hash": "d03116cfba8139d8b5781260286af8a4",
+    "semantic_hash": ""
   },
   "backend/zlatoust/analysis/video.py": {
     "mtime": 1795438563.039064,
