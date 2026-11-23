@@ -93,14 +93,14 @@ def score(speech: dict, prosody: dict, video: dict, diction: dict | None, mode: 
     if prosody:
         lvl = prosody.get("level_dbfs", -30)
         drop = prosody.get("phrase_end_drop_db", 0)
-        s = band(drop, -10, 4, -20, 10)
-        if lvl < -38:
-            obs.append(_obs("loudness", "warn", "Запись очень тихая. Говорите громче или поднесите микрофон ближе."))
-            s = min(s, 60)
+        # Оценка — только за навык (договаривает ли человек концы фраз). Уровень микрофона —
+        # техническое замечание: он зависит от настроек Windows, а не от голоса, и оценку не снижает.
+        s = band(drop, -10, 6, -20, 12)
+        if lvl < -45:
+            obs.append(_obs("loudness", "warn", f"Микрофон записывает очень тихо ({n(lvl)} дБ). На оценку это не влияет, но точность разбора ниже: поднимите «Громкость ввода» в настройках звука Windows."))
         if prosody.get("clipping"):
-            obs.append(_obs("loudness", "warn", "Звук перегружен и хрипит. Отодвиньтесь от микрофона или снизьте его чувствительность."))
-            s = min(s, 70)
-        if drop > 4:
+            obs.append(_obs("loudness", "warn", "Звук перегружен и хрипит. Снизьте «Громкость ввода» в настройках звука Windows или отодвиньте микрофон."))
+        if drop > 6:
             fading = prosody.get("fading_phrases", [])
             obs.append(_obs("loudness", "warn", f"Концы фраз затихают в среднем на {drop:.0f} дБ. Договаривайте последнее слово.", fading[0]["t"] if fading else None))
         scores["loudness"] = s

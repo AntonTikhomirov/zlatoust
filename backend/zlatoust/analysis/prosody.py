@@ -55,19 +55,26 @@ def prosody_metrics(audio: np.ndarray, phrases: list[tuple[float, float]]) -> di
     out["clipping"] = bool(np.mean(np.abs(audio) > 0.98) > 0.001)
     out["peak"] = round(peak, 3)
 
-    # Затухание к концу фразы: сравниваем громкость последней трети с первыми двумя.
+    # Затухание к концу фразы: громкость последнего слога (~0,4 с) против типичной громкости фразы.
+    # Берём только звучащие кадры (не тише фразы на 25 дБ): Whisper часто тянет конец слова в тишину,
+    # и без этого фильтра любая фраза «затухала» бы. Естественное понижение тона в конце
+    # повествовательной фразы даёт 3–6 дБ, это норма.
     drops = []
     for a, b in phrases:
         if b - a < 1.2:
             continue
-        cut = a + (b - a) * 2 / 3
-        head = it[(itx >= a) & (itx < cut)]
-        tail = it[(itx >= cut) & (itx <= b)]
-        if head.size > 3 and tail.size > 3:
-            drops.append({"t": round(b, 2), "drop_db": round(float(np.mean(head) - np.mean(tail)), 1)})
+        seg = it[(itx >= a) & (itx <= b)]
+        if seg.size < 10:
+            continue
+        ref = float(np.percentile(seg, 75))
+        tail = it[(itx >= b - 0.4) & (itx <= b)]
+        tail = tail[tail > ref - 25]
+        body = seg[seg > ref - 25]
+        if tail.size > 3 and body.size > 5:
+            drops.append({"t": round(b, 2), "drop_db": round(float(np.median(body) - np.median(tail)), 1)})
     if drops:
         out["phrase_end_drop_db"] = round(float(np.median([d["drop_db"] for d in drops])), 1)
-        out["fading_phrases"] = [d for d in drops if d["drop_db"] >= 8]
+        out["fading_phrases"] = [d for d in drops if d["drop_db"] >= 10]
     return out
 
 
