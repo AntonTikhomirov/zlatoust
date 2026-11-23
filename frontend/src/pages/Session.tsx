@@ -41,7 +41,7 @@ export default function SessionPage({ id, catalog }: { id: string; catalog: Cata
       <h1>Не получилось разобрать запись</h1>
       <p className="muted">{s.error}</p>
       <div className="row">
-        <button className="btn btn-primary" onClick={() => api.retry(s.id).then(() => setS({ ...s, status: 'queued', progress: 0 }))}><Icon name="retry" size={18} />Попробовать ещё раз</button>
+        <button className="btn btn-primary" onClick={() => api.retry(s.id).then(() => location.reload())}><Icon name="retry" size={18} />Попробовать ещё раз</button>
         <a className="btn" href="#/record">Записать заново</a>
       </div>
     </div>
@@ -113,7 +113,8 @@ function ReportView({ s, catalog }: { s: Session; catalog: Catalog }) {
         </div>
         <div className="stack" style={{ gap: 8 }}>
           {next && <a className="btn btn-primary" href={`#/record?ex=${next.id}`}>Следующее упражнение<Icon name="arrow" size={18} /></a>}
-          <a className="btn" href={again}><Icon name="retry" size={18} />Повторить</a>
+          <a className="btn" href={again}><Icon name="retry" size={18} />Записать ещё раз</a>
+          <button className="btn btn-ghost" title="Пересчитать оценки этой записи по текущим правилам" onClick={() => api.retry(s.id).then(() => location.reload())}>Пересчитать разбор</button>
         </div>
       </section>
 

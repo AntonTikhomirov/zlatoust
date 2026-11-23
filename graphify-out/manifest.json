@@ -156,10 +156,10 @@
     "semantic_hash": "61b8f82d4086aaee0aee2d7ef625ce4c"
   },
   "frontend/src/pages/Session.tsx": {
-    "mtime": 1795438935.0612493,
-    "seen": 1795439123.1380959,
-    "ast_hash": "56e2b662407abdb4db0342e92fb40001",
-    "semantic_hash": "56e2b662407abdb4db0342e92fb40001"
+    "mtime": 1795442851.7382305,
+    "seen": 1795442858.1711216,
+    "ast_hash": "c945ccecdd509b97bb66251617dddb8b",
+    "semantic_hash": ""
   },
   "frontend/src/pages/Settings.tsx": {
     "mtime": 1795438930.4875698,
