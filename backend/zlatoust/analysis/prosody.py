@@ -40,11 +40,16 @@ def prosody_metrics(audio: np.ndarray, phrases: list[tuple[float, float]]) -> di
         out["pitch_windows"] = win
 
     intensity = snd.to_intensity(minimum_pitch=75, time_step=0.02)
-    it = intensity.values[0]
+    it = intensity.values[0].copy()
+    # Шумодав WebView2 отдаёт в паузах точные нули, Praat даёт на них огромные минусы дБ.
+    # Всё, что тише 40 дБ от пика записи, считаем тишиной и в расчёт не берём.
+    it[~np.isfinite(it)] = -300.0
+    loud = it > (np.max(it) - 40)
     itx = intensity.xs()
     speech_mask = np.zeros_like(it, dtype=bool)
     for a, b in phrases:
         speech_mask |= (itx >= a) & (itx <= b)
+    speech_mask &= loud
     if speech_mask.sum() > 10:
         sp = it[speech_mask]
         out["loudness_std_db"] = round(float(np.std(sp)), 2)

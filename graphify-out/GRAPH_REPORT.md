@@ -1,7 +1,7 @@
 # Graph Report - zlatoust  (2026-11-23)
 
 ## Corpus Check
-- 43 files · ~16,445 words
+- 43 files · ~16,489 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 7 file(s) not represented in the graph (top: (none) 4, .ico 1, .css 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `dd41b5a9`
+- Built from commit: `cbe6e459`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
