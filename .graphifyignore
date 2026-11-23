@@ -1,0 +1,3 @@
+frontend/dist/
+uv.lock
+frontend/package-lock.json
