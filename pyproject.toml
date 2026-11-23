@@ -1,0 +1,39 @@
+[project]
+name = "zlatoust"
+version = "0.1.0"
+description = "Тренажёр публичных выступлений: речь, дикция, жесты, подача на камеру"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.32",
+  "python-multipart>=0.0.12",
+  "pydantic>=2.9",
+  "numpy>=1.26,<3",
+  "av>=13",
+  "faster-whisper>=1.1",
+  "praat-parselmouth>=0.4.5",
+  "mediapipe>=1.2,<2",
+  "httpx>=0.27",
+  "anthropic>=0.60",
+  "nvidia-cublas-cu12; sys_platform == 'win32' or sys_platform == 'linux'",
+  "nvidia-cudnn-cu12>=9,<10; sys_platform == 'win32' or sys_platform == 'linux'",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend/zlatoust"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[project.scripts]
+zlatoust = "zlatoust.app:main"
