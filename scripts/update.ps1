@@ -1,4 +1,4 @@
-# Обновление до последней версии из GitHub
+﻿# Обновление до последней версии из GitHub
 $ErrorActionPreference = "Stop"
 Set-Location (Split-Path -Parent $PSScriptRoot)
 git pull

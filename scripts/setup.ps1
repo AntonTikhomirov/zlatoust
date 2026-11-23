@@ -1,4 +1,4 @@
-# Установка Златоуста одной командой. Запуск из папки проекта:
+﻿# Установка Златоуста одной командой. Запуск из папки проекта:
 #   powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
