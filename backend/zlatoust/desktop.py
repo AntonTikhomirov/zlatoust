@@ -60,10 +60,22 @@ def _allow_media(window, origin: str) -> None:
 
 
 def _set_icon(window) -> None:
+    """WinForms разрешает менять форму только из её UI-потока, поэтому идём через Invoke."""
     try:
+        import System  # type: ignore
         import System.Drawing  # type: ignore
 
-        window.native.Icon = System.Drawing.Icon(str(ICON))
+        form = window.native
+        icon = System.Drawing.Icon(str(ICON))
+
+        def apply() -> None:
+            form.Icon = icon
+
+        if form.InvokeRequired:
+            form.Invoke(System.Action(apply))
+        else:
+            apply()
+        log.info("Иконка окна установлена")
     except Exception as e:  # noqa: BLE001
         log.warning("Не удалось поставить иконку окна: %s", e)
 
@@ -87,8 +99,9 @@ def run(start_server, url: str, already_running: bool) -> None:
     )
     state: dict = {}
 
+    window.events.shown += lambda: _set_icon(window)
+
     def boot() -> None:
-        _set_icon(window)
         if already_running:
             ok, msg = True, ""
         else:
