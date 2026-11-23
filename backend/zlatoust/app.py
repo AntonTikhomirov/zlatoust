@@ -212,8 +212,37 @@ def _open_window(url: str) -> subprocess.Popen | None:
     ])
 
 
+def _show_startup_error() -> None:
+    """Вместо пустого окна с ERR_CONNECTION_REFUSED показываем понятную страницу с концом журнала."""
+    import html
+
+    try:
+        tail = "".join(log_path().read_text(encoding="utf-8", errors="replace").splitlines(True)[-40:])
+    except OSError:
+        tail = ""
+    page = data_dir() / "startup-error.html"
+    page.write_text(
+        "<!doctype html><meta charset=utf-8><title>Златоуст не запустился</title>"
+        "<body style='font-family:Segoe UI,sans-serif;max-width:760px;margin:40px auto;padding:0 16px'>"
+        "<h1>Златоуст не запустился</h1><p>Попробуйте запустить ярлык ещё раз. Если не поможет, "
+        "пришлите этот текст разработчику.</p>"
+        f"<p>Журнал: {html.escape(str(log_path()))}</p><pre style='white-space:pre-wrap;background:#f3f1ec;padding:12px'>"
+        f"{html.escape(tail)}</pre>",
+        encoding="utf-8",
+    )
+    webbrowser.open(page.as_uri())
+
+
 def main() -> None:
     _setup_logging()
+    try:
+        _main()
+    except Exception:
+        log.exception("Ошибка запуска")
+        _show_startup_error()
+
+
+def _main() -> None:
     url = f"http://{HOST}:{PORT}/"
     if "--server" not in sys.argv and _server_running():
         _open_window(url)  # приложение уже запущено — просто ещё одно окно
@@ -223,12 +252,22 @@ def main() -> None:
 
     app = create_app()
     server = uvicorn.Server(uvicorn.Config(app, host=HOST, port=PORT, log_level="warning", log_config=None))
-    t = threading.Thread(target=server.run, daemon=True)
+    def run() -> None:
+        try:
+            server.run()
+        except BaseException:  # noqa: BLE001 — под pythonw нет консоли, всё пишем в журнал
+            log.exception("Сервер упал")
+
+    t = threading.Thread(target=run, daemon=True)
     t.start()
-    for _ in range(100):
-        if server.started:
-            break
-        time.sleep(0.1)
+    # Первый запуск бывает долгим (антивирус проверяет свежие библиотеки) — ждём до 2 минут.
+    deadline = time.monotonic() + 120
+    while not server.started and t.is_alive() and time.monotonic() < deadline:
+        time.sleep(0.2)
+    if not server.started:
+        log.error("Ядро не запустилось (поток жив: %s)", t.is_alive())
+        _show_startup_error()
+        return
     log.info("Златоуст запущен: %s, данные в %s", url, data_dir())
 
     if "--server" in sys.argv:

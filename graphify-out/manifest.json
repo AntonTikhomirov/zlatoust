@@ -48,10 +48,10 @@
     "semantic_hash": "4b1c0630cfef27cc59cc93d671c2beea"
   },
   "backend/zlatoust/app.py": {
-    "mtime": 1795438502.3119152,
-    "seen": 1795439123.1380582,
-    "ast_hash": "2e5964ff411b78f0c75ffb1011a267c6",
-    "semantic_hash": "2e5964ff411b78f0c75ffb1011a267c6"
+    "mtime": 1795441028.9030027,
+    "seen": 1795441057.1863768,
+    "ast_hash": "a6c4161ddfdd49239897a2c19421dbf0",
+    "semantic_hash": ""
   },
   "backend/zlatoust/db.py": {
     "mtime": 1795438211.870506,
@@ -210,16 +210,16 @@
     "semantic_hash": "74a3376c267630426d9481f170d19493"
   },
   "scripts/setup.ps1": {
-    "mtime": 1795438988.4060898,
-    "seen": 1795439123.1381161,
-    "ast_hash": "b050efeb5a9398cb11037c31281af46c",
-    "semantic_hash": "b050efeb5a9398cb11037c31281af46c"
+    "mtime": 1795440029.307692,
+    "seen": 1795441057.1864192,
+    "ast_hash": "f579b6d2c028c976a5a5bfc85f2e48da",
+    "semantic_hash": ""
   },
   "scripts/update.ps1": {
-    "mtime": 1795438988.4105523,
-    "seen": 1795439123.1381176,
-    "ast_hash": "c71c929418c26e830e1ce280a2128962",
-    "semantic_hash": "c71c929418c26e830e1ce280a2128962"
+    "mtime": 1795440029.312876,
+    "seen": 1795441057.1864207,
+    "ast_hash": "5af5e69b54309da718e5a345ad0b83d7",
+    "semantic_hash": ""
   },
   "tests/e2e_server.py": {
     "mtime": 1795438862.70071,
@@ -251,16 +251,10 @@
     "ast_hash": "cd62db42d73e402818f162b46137f2a6",
     "semantic_hash": "cd62db42d73e402818f162b46137f2a6"
   },
-  ".claude/settings.json": {
-    "mtime": 1795439133.2992768,
-    "seen": 1795439143.3078117,
-    "ast_hash": "8eafe95f2f857d090df6c04324b234d1",
-    "semantic_hash": ""
-  },
   "CLAUDE.md": {
-    "mtime": 1795439133.310561,
-    "seen": 1795439143.3078856,
-    "ast_hash": "18598401260dd773c7eeead7fab37b19",
+    "mtime": 1795440035.0823135,
+    "seen": 1795441057.1864247,
+    "ast_hash": "dd2edd4541cb19d91487cb0f7c0a9651",
     "semantic_hash": ""
   },
   "frontend/package-lock.json": {
